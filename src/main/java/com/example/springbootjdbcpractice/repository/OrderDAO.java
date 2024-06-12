@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Repository
 public class OrderDAO {
 
-    private final String scriptFileName = "scripts/data.sql";
+    private final String scriptFileName = "db.changelog/migrations/data_v1.sql";
 
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
