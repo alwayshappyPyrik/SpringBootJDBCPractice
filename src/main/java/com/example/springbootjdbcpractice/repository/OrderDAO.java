@@ -1,17 +1,16 @@
 package com.example.springbootjdbcpractice.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
@@ -19,11 +18,12 @@ public class OrderDAO {
 
     private final String scriptFileName = "db.changelog/migrations/data_v1.sql";
 
-    NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Autowired
-    public OrderDAO(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    public OrderDAO(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     public String read(String scriptFileName) {
@@ -36,11 +36,8 @@ public class OrderDAO {
     }
 
     public String getProductName(String firstname) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("firstname", firstname);
-        List<String> selectProductName = namedParameterJdbcTemplate.query(read(scriptFileName),
-                params,
-                (rs, rowNum) -> rs.getString("product_name"));
-        return String.valueOf(selectProductName);
+        Query query = entityManager.createNativeQuery(read(scriptFileName), String.class);
+        query.setParameter("firstname", firstname);
+        return query.getResultList().toString();
     }
 }
