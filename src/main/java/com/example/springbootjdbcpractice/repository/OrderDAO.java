@@ -36,6 +36,8 @@ public class OrderDAO {
     }
 
     public String getProductName(String firstname) {
+        //HQL query
+        //Query query = entityManager.createQuery("select o.productName from orders o inner join customers.order");
         Query query = entityManager.createNativeQuery(read(scriptFileName), String.class);
         query.setParameter("firstname", firstname);
         return query.getResultList().toString();
